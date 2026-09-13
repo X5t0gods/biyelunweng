@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}个人中心 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<h5 class="mb-3 fw-bold"><i class="bi bi-person-circle text-primary"></i> 个人中心</h5>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">基本信息</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted" width="40%">姓名</th><td>{{ user.real_name|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">登录账号</th><td>{{ user.username }}</td></tr>
+                    <tr><th class="text-muted">所属角色</th><td><span class="badge bg-primary">{{ user.role_name }}</span></td></tr>
+                    <tr><th class="text-muted">工号</th><td>{{ user.employee_no|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">手机号</th><td>{{ user.phone|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">入职日期</th><td>{{ user.entry_date|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">上次登录</th><td>{{ user.last_login|default:'首次登录' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">修改密码</div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">原密码</label>
+                        <input type="password" name="old_password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">新密码</label>
+                        <input type="password" name="new_password1" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">确认新密码</label>
+                        <input type="password" name="new_password2" class="form-control" required>
+                    </div>
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> 提交修改</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-header">我的最近操作</div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush small">
+                    {% for log in my_logs %}
+                        <li class="list-group-item">
+                            <div class="fw-semibold">{{ log.action }}</div>
+                            <div class="text-muted">{{ log.created_at|date:"m-d H:i" }}</div>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">暂无操作记录</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

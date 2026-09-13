@@ -1,0 +1,5 @@
+Django==5.1.5
+# MySQL 驱动：纯 Python 实现，Windows / Linux / macOS 均可直接安装，无需编译
+PyMySQL==1.1.1
+# 若希望使用官方 C 扩展驱动，可改用下面的 mysqlclient（Windows 需预编译包或 VS 生成工具）
+# mysqlclient==2.2.4

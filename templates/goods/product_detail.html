@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}商品详情 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-box-seam text-primary"></i> {{ object.name }}
+            <small class="text-muted fs-6">#{{ object.barcode }}</small></h5>
+        <div class="text-muted small">{{ object.category.name }} · {{ object.spec|default:'无规格' }} · {{ object.unit }}</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'goods:product_update' object.pk %}" class="btn btn-primary btn-sm">编辑商品</a>
+        <a href="{% url 'goods:product_list' %}" class="btn btn-outline-secondary btn-sm">返回列表</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">基本信息</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted" width="45%">所属分类</th><td>{{ object.category.name }}</td></tr>
+                    <tr><th class="text-muted">默认供应商</th><td>{{ object.supplier.name|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">进价</th><td>¥{{ object.purchase_price }}</td></tr>
+                    <tr><th class="text-muted">售价</th><td class="fw-bold text-primary">¥{{ object.sale_price }}</td></tr>
+                    <tr><th class="text-muted">单件毛利</th><td class="text-success">¥{{ object.profit|floatformat:2 }}</td></tr>
+                    <tr><th class="text-muted">毛利率</th><td>{{ object.profit_rate }}%</td></tr>
+                    <tr><th class="text-muted">当前库存</th>
+                        <td class="{% if object.is_low_stock %}text-danger fw-bold{% else %}fw-bold{% endif %}">
+                            {{ object.stock }}{{ object.unit }}
+                            {% if object.is_low_stock %}<span class="badge bg-danger ms-1">库存预警</span>{% endif %}</td></tr>
+                    <tr><th class="text-muted">安全库存</th><td>{{ object.safety_stock }}{{ object.unit }}</td></tr>
+                    <tr><th class="text-muted">库存金额</th><td>¥{{ object.stock_value|floatformat:2 }}</td></tr>
+                    <tr><th class="text-muted">保质期</th><td>{{ object.shelf_life_days|default:'-' }} 天</td></tr>
+                    <tr><th class="text-muted">状态</th><td>{{ object.get_status_display }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">库存变动记录（最近 20 条）</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>时间</th><th>变动类型</th><th>变动数量</th><th>变动前</th><th>变动后</th>
+                        <th>关联单号</th><th>操作人</th></tr></thead>
+                    <tbody>
+                    {% for log in logs %}
+                        <tr>
+                            <td class="small text-muted">{{ log.created_at|date:"Y-m-d H:i" }}</td>
+                            <td><span class="badge bg-light text-dark">{{ log.get_change_type_display }}</span></td>
+                            <td class="{% if log.quantity > 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                {{ log.quantity|stringformat:"+d" }}</td>
+                            <td>{{ log.stock_before }}</td>
+                            <td>{{ log.stock_after }}</td>
+                            <td class="small">{{ log.related_no|default:'-' }}</td>
+                            <td>{{ log.operator.real_name|default:'-' }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted py-4">暂无库存变动记录</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

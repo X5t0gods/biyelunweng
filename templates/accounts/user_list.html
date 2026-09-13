@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}员工账号 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-person-badge text-primary"></i> 员工账号管理</h5>
+        <div class="text-muted small">维护系统使用者账号、角色与权限</div>
+    </div>
+    <a href="{% url 'accounts:user_create' %}" class="btn btn-primary btn-sm mt-2 mt-md-0">
+        <i class="bi bi-plus-lg"></i> 新增员工</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form class="row g-2" method="get">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="账号 / 姓名 / 手机号 / 工号"
+                       value="{{ keyword }}">
+            </div>
+            <div class="col-md-3">
+                <select name="role" class="form-select">
+                    <option value="">全部角色</option>
+                    {% for value, label in role_choices %}
+                        <option value="{{ value }}" {% if role == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit"><i class="bi bi-search"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+            <tr><th>#</th><th>工号</th><th>姓名</th><th>登录账号</th><th>角色</th><th>手机号</th>
+                <th>入职日期</th><th>状态</th><th class="text-end">操作</th></tr>
+            </thead>
+            <tbody>
+            {% for obj in page_obj %}
+                <tr>
+                    <td>{{ obj.pk }}</td>
+                    <td>{{ obj.employee_no|default:'-' }}</td>
+                    <td class="fw-bold">{{ obj.real_name|default:'-' }}</td>
+                    <td>{{ obj.username }}</td>
+                    <td>
+                        <span class="badge {% if obj.role == 'admin' %}bg-danger{% elif obj.role == 'manager' %}bg-primary{% elif obj.role == 'cashier' %}bg-info{% else %}bg-secondary{% endif %}">
+                            {{ obj.role_name }}</span>
+                    </td>
+                    <td>{{ obj.phone|default:'-' }}</td>
+                    <td>{{ obj.entry_date|default:'-' }}</td>
+                    <td>{% if obj.is_active %}<span class="badge bg-success">在职</span>
+                        {% else %}<span class="badge bg-secondary">已停用</span>{% endif %}</td>
+                    <td class="text-end">
+                        <a href="{% url 'accounts:user_update' obj.pk %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                        <a href="{% url 'accounts:user_reset_password' obj.pk %}" class="btn btn-sm btn-outline-warning">重置密码</a>
+                        <a href="{% url 'accounts:user_toggle' obj.pk %}" class="btn btn-sm btn-outline-secondary"
+                           data-confirm="确定要{{ obj.is_active|yesno:'停用,启用' }}该账号吗？">
+                            {{ obj.is_active|yesno:'停用,启用' }}</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="9" class="text-center text-muted py-4">暂无员工数据</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

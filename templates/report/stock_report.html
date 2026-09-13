@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}库存报表 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-boxes text-primary"></i> 库存与会员概览</h5>
+        <div class="text-muted small">实时库存结构与会员资产概况</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'report:sales_report' %}" class="btn btn-outline-secondary btn-sm">销售报表</a>
+        <a href="{% url 'report:profit_report' %}" class="btn btn-outline-secondary btn-sm">利润分析</a>
+        <a href="{% url 'report:goods_report' %}" class="btn btn-outline-secondary btn-sm">商品排行</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card stat-card h-100"><div class="card-body">
+            <div class="stat-label">商品种类</div>
+            <div class="stat-value text-primary">{{ products|length }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card h-100"><div class="card-body">
+            <div class="stat-label">库存总金额</div>
+            <div class="stat-value text-success">¥{{ total_value|floatformat:2 }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card h-100"><div class="card-body">
+            <div class="stat-label">库存预警商品</div>
+            <div class="stat-value text-danger">{{ low_count }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card h-100"><div class="card-body">
+            <div class="stat-label">会员数量</div>
+            <div class="stat-value text-info">{{ member_count }}</div>
+        </div></div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">分类库存分布</div>
+            <div class="card-body"><div id="stockChart" style="height:300px"></div></div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">会员资产概况</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted">会员总数</th><td class="fw-bold">{{ member_count }} 人</td></tr>
+                    <tr><th class="text-muted">储值余额合计</th><td class="fw-bold text-success">¥{{ member_balance|floatformat:2 }}</td></tr>
+                    <tr><th class="text-muted">积分余额合计</th><td class="fw-bold text-warning">{{ member_points }}</td></tr>
+                </table>
+                <hr>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>商品</th><th>分类</th><th>库存</th><th>库存金额</th></tr></thead>
+                        <tbody>
+                        {% for p in products|slice:":8" %}
+                            <tr>
+                                <td class="fw-bold">{{ p.name }}</td>
+                                <td>{{ p.category.name }}</td>
+                                <td class="{% if p.is_low_stock %}text-danger fw-bold{% endif %}">{{ p.stock }}</td>
+                                <td>¥{{ p.stock_value|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var chart = echarts.init(document.getElementById('stockChart'));
+    chart.setOption({
+        tooltip: {trigger: 'axis'},
+        legend: {data: ['库存数量', '库存金额'], top: 0},
+        grid: {left: 60, right: 20, top: 40, bottom: 40},
+        xAxis: {type: 'category', data: [{% for c in category_stock %}'{{ c.category__name|default:"未分类" }}',{% endfor %}]},
+        yAxis: [{type: 'value', name: '件'}, {type: 'value', name: '元'}],
+        series: [
+            {name: '库存数量', type: 'bar', data: [{% for c in category_stock %}{{ c.total|default:0 }},{% endfor %}],
+             itemStyle: {color: '#2563eb'}},
+            {name: '库存金额', type: 'line', yAxisIndex: 1, smooth: true,
+             data: [{% for c in category_stock %}{{ c.value|floatformat:2 }},{% endfor %}],
+             itemStyle: {color: '#f59e0b'}}
+        ]
+    });
+    window.addEventListener('resize', function () { chart.resize(); });
+})();
+</script>
+{% endblock %}

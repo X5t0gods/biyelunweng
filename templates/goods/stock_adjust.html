@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}库存调整 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<h5 class="mb-3 fw-bold"><i class="bi bi-sliders text-primary"></i> 库存调整：{{ object.name }}
+    <small class="text-muted fs-6">当前库存 {{ object.stock }}{{ object.unit }}</small></h5>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% include 'includes/form_fields.html' %}
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> 确认调整</button>
+                        <a href="{% url 'goods:stock_list' %}" class="btn btn-outline-secondary">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-warning">
+            <div class="fw-bold mb-2"><i class="bi bi-exclamation-triangle"></i> 注意事项</div>
+            <ul class="mb-0 ps-3 small">
+                <li><b>库存盘点</b>：以实际盘点结果修正账面库存，填写差值（如盘点少 3 件填 -3）。</li>
+                <li><b>商品报损</b>：破损、过期等损耗出库，填写负数。</li>
+                <li><b>手动调整</b>：其他原因的库存变动。</li>
+                <li>每次调整都会生成一条库存流水，可在库存流水中追溯。</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

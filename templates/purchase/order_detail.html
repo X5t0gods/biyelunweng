@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}采购单 {{ object.order_no }} - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-truck text-primary"></i> 采购单 {{ object.order_no }}
+            {% if object.status == 'draft' %}<span class="badge bg-warning text-dark">待入库</span>
+            {% elif object.status == 'confirmed' %}<span class="badge bg-success">已入库</span>
+            {% else %}<span class="badge bg-secondary">已取消</span>{% endif %}
+        </h5>
+        <div class="text-muted small">供应商：{{ object.supplier.name }} · 经办人：{{ object.operator.real_name|default:object.operator.username }} ·
+            创建于 {{ object.created_at|date:"Y-m-d H:i" }}</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        {% if object.status == 'draft' %}
+            <a href="{% url 'purchase:order_confirm' object.pk %}" class="btn btn-success btn-sm"
+               data-confirm="确认后将增加相应商品库存，确定入库吗？"><i class="bi bi-box-arrow-in-down"></i> 确认入库</a>
+            <a href="{% url 'purchase:order_cancel' object.pk %}" class="btn btn-outline-secondary btn-sm"
+               data-confirm="确定取消该采购单吗？">取消</a>
+        {% endif %}
+        <a href="{% url 'purchase:order_list' %}" class="btn btn-outline-secondary btn-sm">返回</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">采购明细</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>#</th><th>商品</th><th>条码</th><th>数量</th><th>单价</th><th>小计</th>
+                        {% if object.status == 'draft' %}<th class="text-end">操作</th>{% endif %}</tr></thead>
+                    <tbody>
+                    {% for item in object.items.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ item.product.name }}</td>
+                            <td class="small text-muted">{{ item.product.barcode }}</td>
+                            <td>{{ item.quantity }}{{ item.product.unit }}</td>
+                            <td>¥{{ item.price }}</td>
+                            <td class="fw-bold">¥{{ item.subtotal }}</td>
+                            {% if object.status == 'draft' %}
+                                <td class="text-end">
+                                    <a href="{% url 'purchase:order_delete_item' object.pk item.pk %}"
+                                       class="btn btn-sm btn-outline-danger"
+                                       data-confirm="删除该明细？">删除</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted py-4">尚未添加采购商品</td></tr>
+                    {% endfor %}
+                    </tbody>
+                    {% if object.items.exists %}
+                    <tfoot>
+                        <tr class="table-light fw-bold">
+                            <td colspan="5" class="text-end">合计</td>
+                            <td class="text-primary">¥{{ object.total_amount }}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if object.status == 'draft' %}
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">添加采购商品</div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% include 'includes/form_fields.html' with form=item_form %}
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-plus-lg"></i> 添加</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">单据信息</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted">采购总额</th><td class="fw-bold text-primary fs-5">¥{{ object.total_amount }}</td></tr>
+                    <tr><th class="text-muted">商品件数</th><td>{{ object.total_quantity }}</td></tr>
+                    <tr><th class="text-muted">入库时间</th><td>{{ object.confirmed_at|date:"Y-m-d H:i"|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">备注</th><td>{{ object.remark|default:'-' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

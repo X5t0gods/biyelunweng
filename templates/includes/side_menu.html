@@ -1,0 +1,45 @@
+{% load app_tags %}
+{# 侧边栏菜单：桌面侧栏与移动端抽屉共用同一份定义，避免两处不同步 #}
+{# 调用方式：{% include 'includes/side_menu.html' with menu_class='list-group list-group-flush pt-3' show_titles=1 %} #}
+<div class="{{ menu_class }}" data-page-node-id="tsRsATbMoShtPBNG3WOSfo">
+    <a href="{% url 'core:dashboard' %}" class="side-link {% nav_active 'core:dashboard' %}" data-page-node-id="KWly2jQRyxK9bXeFud4u9f">
+        <i class="bi bi-speedometer2" data-page-node-id="7G9UmaPbLnMYniNJcj3E97"></i> 系统首页</a>
+
+    {% if show_titles %}<div class="side-title" data-page-node-id="AkMjOC1ipx2qsBmwt4Tnxo">日常业务</div>{% endif %}
+    <a href="{% url 'sales:pos' %}" class="side-link {% nav_active 'sales:pos' %}" data-page-node-id="83N7pnXb30Jr3mbCsUt9La">
+        <i class="bi bi-cash-register" data-page-node-id="DdlEVrzk6jLjXQrqDnYv5g"></i> 前台收银</a>
+    <a href="{% url 'sales:sale_list' %}"
+       class="side-link {% nav_active 'sales:sale_list' 'sales:sale_detail' 'sales:sale_void' %}" data-page-node-id="2w8zAn58JbiIpt6jQX6WiL">
+        <i class="bi bi-receipt" data-page-node-id="CcxMoJ5a5AOR1pWAuIogNX"></i> 销售订单</a>
+    <a href="{% url 'sales:return_list' %}"
+       class="side-link {% nav_active 'sales:return_list' 'sales:return_create' 'sales:return_detail' %}" data-page-node-id="3CFPYzbKsf5O50N4fTT5PS">
+        <i class="bi bi-arrow-return-left" data-page-node-id="C6yG4CAreEx5OIEDaNPTOF"></i> 销售退货</a>
+
+    {% if show_titles %}<div class="side-title" data-page-node-id="vlzMLDTkQgopcveBcitg7O">进销存</div>{% endif %}
+    <a href="{% url 'goods:product_list' %}"
+       class="side-link {% nav_active 'goods:product_list' 'goods:product_create' 'goods:product_detail' 'goods:product_update' 'goods:product_toggle' 'goods:category_list' 'goods:category_create' 'goods:category_update' 'goods:category_delete' %}" data-page-node-id="8GA7IEiT9hdXfnvmXC271G">
+        <i class="bi bi-box-seam" data-page-node-id="Ptb07oDHWVBXJEFNPcDJ5H"></i> 商品管理</a>
+    <a href="{% url 'goods:stock_list' %}"
+       class="side-link {% nav_active 'goods:stock_list' 'goods:stock_adjust' 'goods:stock_log_list' 'goods:stock_alert' %}" data-page-node-id="Evg6eP8brNH4BYV03mUij2">
+        <i class="bi bi-boxes" data-page-node-id="ID8g1NTawMdpph2a2MGYq7"></i> 库存查询</a>
+    <a href="{% url 'purchase:order_list' %}" class="side-link {% nav_active 'purchase:*' %}" data-page-node-id="BIY0hfL5ISOImya4KBvDIG">
+        <i class="bi bi-truck" data-page-node-id="YCZV1BhhexthEiiy48bKy2"></i> 采购进货</a>
+    <a href="{% url 'goods:supplier_list' %}"
+       class="side-link {% nav_active 'goods:supplier_list' 'goods:supplier_create' 'goods:supplier_update' 'goods:supplier_delete' %}" data-page-node-id="4FEP3p5TZtzpFWs2LH0RvT">
+        <i class="bi bi-building" data-page-node-id="o2n4ns1gC9VkDLi0fUTlJf"></i> 供应商</a>
+
+    {% if show_titles %}<div class="side-title" data-page-node-id="Um4mhvFW5mZcGXSApvRBYA">客户与数据</div>{% endif %}
+    <a href="{% url 'member:member_list' %}" class="side-link {% nav_active 'member:*' %}" data-page-node-id="4CdCFqalIGFHHEmP6NLlnj">
+        <i class="bi bi-people" data-page-node-id="4m0HLViM8yg8C8z0PmhmN0"></i> 会员管理</a>
+    <a href="{% url 'report:sales_report' %}" class="side-link {% nav_active 'report:*' %}" data-page-node-id="XVdmMo8niGor7zsWuanDdG">
+        <i class="bi bi-bar-chart-line" data-page-node-id="k99TROLMemLFwfoPiAAf0J"></i> 统计报表</a>
+
+    {% if user.is_manager %}
+        {% if show_titles %}<div class="side-title" data-page-node-id="aayFVHoEGhTWBCXNOzSSxl">系统管理</div>{% endif %}
+        <a href="{% url 'accounts:user_list' %}"
+           class="side-link {% nav_active 'accounts:user_list' 'accounts:user_create' 'accounts:user_update' 'accounts:user_toggle' 'accounts:user_reset_password' %}" data-page-node-id="tCcFZkCMN1FlHM8Rp9crWs">
+            <i class="bi bi-person-badge" data-page-node-id="iINubGwk2ESHj3nNyGxvkk"></i> 员工账号</a>
+        <a href="{% url 'accounts:log_list' %}" class="side-link {% nav_active 'accounts:log_list' %}" data-page-node-id="kWWflaD6ADIZn85krdfjy7">
+            <i class="bi bi-journal-text" data-page-node-id="HtjYd2DYSH7aOL3NwEQ0dD"></i> 操作日志</a>
+    {% endif %}
+</div>

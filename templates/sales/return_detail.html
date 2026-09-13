@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}退货单 {{ object.return_no }} - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-arrow-return-left text-primary"></i> 退货单 {{ object.return_no }}</h5>
+        <div class="text-muted small">原销售单：{{ object.sale.order_no }} ·
+            操作人：{{ object.operator.real_name|default:object.operator.username }} ·
+            退货时间：{{ object.created_at|date:"Y-m-d H:i" }}</div>
+    </div>
+    <a href="{% url 'sales:return_list' %}" class="btn btn-outline-secondary btn-sm mt-2 mt-md-0">返回</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">退货明细</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>#</th><th>商品</th><th>条码</th><th>单价</th><th>退货数量</th><th>退款小计</th></tr></thead>
+                    <tbody>
+                    {% for item in object.items.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ item.product.name }}</td>
+                            <td class="small text-muted">{{ item.product.barcode }}</td>
+                            <td>¥{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="fw-bold text-danger">¥{{ item.subtotal }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted py-4">无明细</td></tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="table-light fw-bold">
+                        <td colspan="5" class="text-end">退款合计</td>
+                        <td class="text-danger">¥{{ object.amount }}</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">退货信息</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted">退货单号</th><td>{{ object.return_no }}</td></tr>
+                    <tr><th class="text-muted">原销售单</th>
+                        <td><a href="{% url 'sales:sale_detail' object.sale.pk %}" class="text-decoration-none">{{ object.sale.order_no }}</a></td></tr>
+                    <tr><th class="text-muted">退款金额</th><td class="fw-bold text-danger">¥{{ object.amount }}</td></tr>
+                    <tr><th class="text-muted">退货原因</th><td>{{ object.reason|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">操作人</th><td>{{ object.operator.real_name|default:object.operator.username }}</td></tr>
+                    <tr><th class="text-muted">退货时间</th><td>{{ object.created_at|date:"Y-m-d H:i" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

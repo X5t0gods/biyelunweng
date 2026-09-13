@@ -1,0 +1,163 @@
+:root {
+    --app-primary: #2563eb;
+    --app-sidebar: #f8fafc;
+}
+
+body {
+    background: #f1f5f9;
+    font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    color: #1f2937;
+}
+
+/* 顶部导航 */
+.app-topbar {
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .08);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* 侧边栏 */
+.app-sidebar {
+    min-height: calc(100vh - 56px);
+    background: var(--app-sidebar);
+    border-right: 1px solid #e2e8f0;
+}
+
+.side-link {
+    display: block;
+    padding: .6rem 1.25rem;
+    color: #475569;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    font-size: .93rem;
+    transition: all .15s;
+}
+
+.side-link:hover {
+    background: #e2e8f0;
+    color: var(--app-primary);
+}
+
+.side-link.active {
+    background: #e0e7ff;
+    color: var(--app-primary);
+    border-left-color: var(--app-primary);
+    font-weight: 600;
+}
+
+.side-title {
+    padding: .9rem 1.25rem .35rem;
+    font-size: .72rem;
+    color: #94a3b8;
+    letter-spacing: 1px;
+}
+
+.app-content {
+    padding: 1.25rem 1.5rem 3rem;
+    min-height: calc(100vh - 56px);
+}
+
+/* 卡片 */
+.card {
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    border-radius: .6rem;
+}
+
+.card-header {
+    background: #fff;
+    border-bottom: 1px solid #eef2f7;
+    font-weight: 600;
+}
+
+/* 数据卡片 */
+.stat-card {
+    border-radius: .6rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+}
+
+.stat-card .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: .6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: .82rem;
+    color: #64748b;
+}
+
+/* 表格 */
+.table thead th {
+    background: #f8fafc;
+    font-size: .85rem;
+    color: #475569;
+    white-space: nowrap;
+}
+
+.table td {
+    font-size: .88rem;
+    vertical-align: middle;
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--app-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.badge-soft {
+    padding: .25rem .55rem;
+    border-radius: .4rem;
+    font-weight: 500;
+}
+
+/* 登录页 */
+.login-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 60%, #0f172a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: .8rem;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, .25);
+}
+
+/* POS 收银 */
+.pos-product-item {
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    border-radius: .5rem;
+    transition: all .15s;
+}
+
+.pos-product-item:hover {
+    border-color: var(--app-primary);
+    background: #eff6ff;
+}
+
+.cart-table td {
+    font-size: .9rem;
+}

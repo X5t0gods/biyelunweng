@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}操作日志 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<h5 class="mb-3 fw-bold"><i class="bi bi-journal-text text-primary"></i> 操作日志</h5>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form class="row g-2" method="get">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="搜索操作人 / 动作 / 详情" value="{{ keyword }}">
+            </div>
+            <div class="col-md-3">
+                <select name="module" class="form-select">
+                    <option value="">全部模块</option>
+                    {% for value, label in module_choices %}
+                        <option value="{{ value }}" {% if module == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit"><i class="bi bi-search"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+            <tr><th>#</th><th>操作人</th><th>模块</th><th>操作类型</th><th>详情</th><th>IP</th><th>操作时间</th></tr>
+            </thead>
+            <tbody>
+            {% for log in page_obj %}
+                <tr>
+                    <td>{{ log.pk }}</td>
+                    <td>{{ log.user.real_name|default:log.user.username|default:'系统' }}</td>
+                    <td><span class="badge bg-light text-dark">{{ log.get_module_display }}</span></td>
+                    <td>{{ log.action }}</td>
+                    <td class="text-muted">{{ log.detail|default:'-'|truncatechars:60 }}</td>
+                    <td class="text-muted">{{ log.ip|default:'-' }}</td>
+                    <td class="text-muted small">{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">暂无日志记录</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

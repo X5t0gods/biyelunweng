@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}办理退货 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<h5 class="mb-3 fw-bold"><i class="bi bi-arrow-return-left text-primary"></i> 办理销售退货</h5>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header">第一步：查询原销售单</div>
+            <div class="card-body">
+                <form method="post" novalidate id="searchForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="sale_no" value="{{ form.sale_no.value|default:'' }}">
+                    <div class="mb-3">
+                        <label class="form-label">原销售单号</label>
+                        {{ form.sale_no }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> 查询订单</button>
+                </form>
+            </div>
+        </div>
+
+        {% if sale %}
+            <div class="card mt-3">
+                <div class="card-header">原单信息</div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr><th class="text-muted">销售单号</th><td>{{ sale.order_no }}</td></tr>
+                        <tr><th class="text-muted">会员</th><td>{{ sale.member.name|default:'散客' }}</td></tr>
+                        <tr><th class="text-muted">实收金额</th><td class="fw-bold">¥{{ sale.actual_amount }}</td></tr>
+                        <tr><th class="text-muted">销售时间</th><td>{{ sale.created_at|date:"Y-m-d H:i" }}</td></tr>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-7">
+        {% if sale %}
+            <div class="card">
+                <div class="card-header">第二步：填写退货数量并提交</div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <input type="hidden" name="sale_no" value="{{ sale.order_no }}">
+                        <table class="table table-sm">
+                            <thead><tr><th>商品</th><th>单价</th><th>购买数量</th><th>退货数量</th></tr></thead>
+                            <tbody>
+                            {% for item in sale.items.all %}
+                                <tr>
+                                    <td class="fw-bold">{{ item.product_name }}</td>
+                                    <td>¥{{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td style="width:140px">
+                                        <input type="number" name="qty_{{ item.pk }}" class="form-control form-control-sm"
+                                               min="0" max="{{ item.quantity }}" value="0">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="mb-3">
+                            <label class="form-label">退货原因</label>
+                            {{ form.reason }}
+                        </div>
+                        <button type="submit" class="btn btn-danger" data-confirm="确认办理退货？库存将回补。">
+                            <i class="bi bi-check-lg"></i> 提交退货</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center text-muted py-5">
+                    <i class="bi bi-receipt fs-1 d-block mb-3"></i>
+                    请先输入原销售单号并查询，再进行退货操作
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

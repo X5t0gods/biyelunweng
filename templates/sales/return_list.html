@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}销售退货 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-arrow-return-left text-primary"></i> 销售退货记录</h5>
+        <div class="text-muted small">退货成功后库存自动回补</div>
+    </div>
+    <a href="{% url 'sales:return_create' %}" class="btn btn-primary btn-sm mt-2 mt-md-0">
+        <i class="bi bi-plus-lg"></i> 办理退货</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>退货单号</th><th>原销售单</th><th>退款金额</th><th>退货原因</th><th>操作人</th><th>退货时间</th>
+                <th class="text-end">操作</th></tr></thead>
+            <tbody>
+            {% for obj in page_obj %}
+                <tr>
+                    <td class="fw-bold">{{ obj.return_no }}</td>
+                    <td><a href="{% url 'sales:sale_detail' obj.sale.pk %}" class="text-decoration-none">{{ obj.sale.order_no }}</a></td>
+                    <td class="fw-bold text-danger">¥{{ obj.amount }}</td>
+                    <td class="text-muted">{{ obj.reason|default:'-' }}</td>
+                    <td>{{ obj.operator.real_name|default:obj.operator.username }}</td>
+                    <td class="small text-muted">{{ obj.created_at|date:"Y-m-d H:i" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'sales:return_detail' obj.pk %}" class="btn btn-sm btn-outline-primary">查看</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">暂无退货记录</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

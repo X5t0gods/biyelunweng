@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}供应商管理 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3" data-page-node-id="3v8jEOsX53SwGAb54WkFCv">
+    <div data-page-node-id="C26OlcDSP6bA8a1dipA1ei">
+        <h5 class="mb-1 fw-bold" data-page-node-id="nkiw7QA3XD1FuQ87xGHhV8"><i class="bi bi-building text-primary" data-page-node-id="M2q6Ama8xTPbCq6rZZD1Hg"></i> 供应商管理</h5>
+        <div class="text-muted small" data-page-node-id="FGDhCxBBR5YhTLSfak2G1W">维护供货商档案与联系方式</div>
+    </div>
+    <a href="{% url 'goods:supplier_create' %}" class="btn btn-primary btn-sm mt-2 mt-md-0" data-page-node-id="1b0tpOMLMlJZcdNfkTEl6g">
+        <i class="bi bi-plus-lg" data-page-node-id="73RkOfOCgfZlbwN1pNvkJC"></i> 新增供应商</a>
+</div>
+
+<div class="card mb-3" data-page-node-id="cYVj0OEyg1E0Ln1JfmcpAk">
+    <div class="card-body py-3" data-page-node-id="gYQtrmCEX7RrQFFoDEnehW">
+        <form class="row g-2" method="get" data-page-node-id="JNOdazPcOfNJjulyAPVey5">
+            <div class="col-md-6" data-page-node-id="GKEpJfQMUieOjKry2POryF">
+                <input type="text" name="q" class="form-control" placeholder="输入名称 / 联系人 / 电话查询" value="{{ keyword }}" data-page-node-id="YDFRg4J9dkVoQrT4I6j2yZ">
+            </div>
+            <div class="col-md-2" data-page-node-id="POX9HHDL2e93rH7SY2dqUO">
+                <button class="btn btn-outline-primary w-100" type="submit" data-page-node-id="PsHaiIEqHtpgRKufOODHIt"><i class="bi bi-search" data-page-node-id="f0j94Z6posltk2AGeWiZlq"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card" data-page-node-id="B1Cw2f4uYAzlDXKXdhZfxD">
+    <div class="table-responsive" data-page-node-id="y8AInwmZMwRhSoqRre7I7Z">
+        <table class="table table-hover mb-0" data-page-node-id="HC3lm1Q5XPIJ8SjUUhtU2O">
+            <thead data-page-node-id="DE4VbfWbUkjuS5QJkOu5Ke"><tr data-page-node-id="eIRWErEYGOY7DzzKjBbfpO"><th data-page-node-id="9R6TLI6ASJIj28fiKMhlrh">#</th><th data-page-node-id="KbNSW4yFVjtDsZB0igfvdr">供应商名称</th><th data-page-node-id="6oUqGSTwmAXWbb6KUaIsM2">联系人</th><th data-page-node-id="GWEHsvsKJWYFAVHpNoxuxq">联系电话</th><th data-page-node-id="yy3XqcJoHOsxbSTqC0oERq">地址</th><th data-page-node-id="xskPqWFlZ6oX9r3ScUqeEe">合作状态</th>
+                <th class="text-end" data-page-node-id="39E7jpMcgbYhhU4Sjp4hH5">操作</th></tr></thead>
+            <tbody data-page-node-id="7QVAcYbVCklH6DpVdN4QNI">
+            {% for obj in page_obj %}
+                <tr data-page-node-id="GyXqX6jdnJcNifA7qgjApS">
+                    <td data-page-node-id="8BjfYsonNajkxHUcrgwnCU">{{ obj.pk }}</td>
+                    <td class="fw-bold" data-page-node-id="rLOSUWp11vhZpO9LGVGuDy">{{ obj.name }}</td>
+                    <td data-page-node-id="PraBf3EZqaW9StmJkAkiYN">{{ obj.contact|default:'-' }}</td>
+                    <td data-page-node-id="LlZSvpIVfNelwcNF1eZhbJ">{{ obj.phone|default:'-' }}</td>
+                    <td class="text-muted" data-page-node-id="Pz2BUyXLKFyCiuaaNECEw1">{{ obj.address|default:'-'|truncatechars:20 }}</td>
+                    <td data-page-node-id="PMFmLPaDMGPDxhLH9Yyzw9">{% if obj.is_active %}<span class="badge bg-success" data-page-node-id="GOD59xei8LmfONT6LTtKkh">合作中</span>
+                        {% else %}<span class="badge bg-secondary" data-page-node-id="0yohYwCVCfQwnmGEZH3Dms">已停止</span>{% endif %}</td>
+                    <td class="text-end" data-page-node-id="yXFQHDcBDBogxgGoSHu4zQ">
+                        <a href="{% url 'goods:supplier_update' obj.pk %}" class="btn btn-sm btn-outline-primary" data-page-node-id="wzCi4wbRd1odDPays6jbqh">编辑</a>
+                        <a href="{% url 'goods:supplier_delete' obj.pk %}" class="btn btn-sm btn-outline-danger"
+                           data-confirm="确定删除供应商【{{ obj.name }}】吗？" data-page-node-id="UnQ993i6WAEEp7ufP9hrkM">删除</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr data-page-node-id="r77H2eJxe6dMS1PgL3VVAS"><td colspan="7" class="text-center text-muted py-4" data-page-node-id="w41SEQNyABIvrsEMMMqOCd">暂无供应商数据</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0" data-page-node-id="oHmL6sXgswj10VJudreSUL">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

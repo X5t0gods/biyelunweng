@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}会员详情 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-person-vcard text-primary"></i> {{ object.name }}
+            <span class="badge bg-info text-dark">{{ object.level_name }}</span></h5>
+        <div class="text-muted small">卡号 {{ object.card_no }} · 手机号 {{ object.phone }}</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'member:member_recharge' object.pk %}" class="btn btn-success btn-sm">充值</a>
+        <a href="{% url 'member:member_update' object.pk %}" class="btn btn-primary btn-sm">编辑</a>
+        <a href="{% url 'member:member_list' %}" class="btn btn-outline-secondary btn-sm">返回</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">会员资料</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted" width="45%">会员卡号</th><td>{{ object.card_no }}</td></tr>
+                    <tr><th class="text-muted">姓名</th><td>{{ object.name }}</td></tr>
+                    <tr><th class="text-muted">手机号</th><td>{{ object.phone }}</td></tr>
+                    <tr><th class="text-muted">性别</th><td>{{ object.get_gender_display }}</td></tr>
+                    <tr><th class="text-muted">生日</th><td>{{ object.birthday|default:'-' }}</td></tr>
+                    <tr><th class="text-muted">会员等级</th><td>{{ object.level_name }}</td></tr>
+                    <tr><th class="text-muted">可用积分</th><td class="fw-bold text-warning">{{ object.points }}</td></tr>
+                    <tr><th class="text-muted">累计积分</th><td>{{ object.total_points }}</td></tr>
+                    <tr><th class="text-muted">储值余额</th><td class="fw-bold text-success">¥{{ object.balance }}</td></tr>
+                    <tr><th class="text-muted">累计消费</th><td class="fw-bold text-primary">¥{{ object.total_spend }}</td></tr>
+                    <tr><th class="text-muted">入会时间</th><td>{{ object.join_date|date:"Y-m-d" }}</td></tr>
+                    <tr><th class="text-muted">备注</th><td>{{ object.remark|default:'-' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">消费记录（最近 15 笔）</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>销售单号</th><th>金额</th><th>获得积分</th><th>支付方式</th><th>收银员</th><th>时间</th></tr></thead>
+                    <tbody>
+                    {% for s in sales %}
+                        <tr>
+                            <td><a href="{% url 'sales:sale_detail' s.pk %}" class="text-decoration-none">{{ s.order_no }}</a></td>
+                            <td class="fw-bold text-primary">¥{{ s.actual_amount }}</td>
+                            <td>{{ s.points_earned }}</td>
+                            <td><span class="badge bg-light text-dark">{{ s.get_pay_method_display }}</span></td>
+                            <td>{{ s.cashier.real_name|default:s.cashier.username }}</td>
+                            <td class="small text-muted">{{ s.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted py-4">该会员暂无消费记录</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

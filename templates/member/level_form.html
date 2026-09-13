@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<h5 class="mb-3 fw-bold"><i class="bi bi-award text-primary"></i> {{ title }}</h5>
+<div class="card">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% include 'includes/form_fields.html' %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> 保存</button>
+                <a href="{% url 'member:level_list' %}" class="btn btn-outline-secondary">返回</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

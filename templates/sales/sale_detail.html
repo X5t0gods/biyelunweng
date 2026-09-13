@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}销售单 {{ object.order_no }} - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-receipt text-primary"></i> 销售单 {{ object.order_no }}
+            {% if object.status == 'done' %}<span class="badge bg-success">已完成</span>
+            {% elif object.status == 'returned' %}<span class="badge bg-warning text-dark">已退货</span>
+            {% else %}<span class="badge bg-secondary">已作废</span>{% endif %}
+        </h5>
+        <div class="text-muted small">收银员：{{ object.cashier.real_name|default:object.cashier.username }} ·
+            销售时间：{{ object.created_at|date:"Y-m-d H:i:s" }}</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        {% if object.status == 'done' and user.is_manager %}
+            <a href="{% url 'sales:sale_void' object.pk %}" class="btn btn-outline-danger btn-sm"
+               data-confirm="作废将回退库存，确定操作吗？">作废订单</a>
+        {% endif %}
+        <button class="btn btn-outline-secondary btn-sm" onclick="window.print()"><i class="bi bi-printer"></i> 打印</button>
+        <a href="{% url 'sales:sale_list' %}" class="btn btn-outline-secondary btn-sm">返回</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">商品明细</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>#</th><th>商品</th><th>条码</th><th>单价</th><th>数量</th><th>小计</th></tr></thead>
+                    <tbody>
+                    {% for item in object.items.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ item.product_name }}</td>
+                            <td class="small text-muted">{{ item.product.barcode }}</td>
+                            <td>¥{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="fw-bold">¥{{ item.subtotal }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="text-center text-muted py-4">无明细</td></tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="table-light fw-bold">
+                        <td colspan="4" class="text-end">合计</td>
+                        <td>{{ object.total_quantity }}</td>
+                        <td class="text-primary">¥{{ object.total_amount }}</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">结算信息</div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th class="text-muted">会员</th><td>{{ object.member.name|default:'散客' }}
+                        {% if object.member %}<span class="badge bg-info text-dark">{{ object.member.level_name }}</span>{% endif %}</td></tr>
+                    <tr><th class="text-muted">应收金额</th><td>¥{{ object.total_amount }}</td></tr>
+                    <tr><th class="text-muted">会员优惠</th><td class="text-success">-¥{{ object.discount_amount }}</td></tr>
+                    <tr><th class="text-muted">实收金额</th><td class="fw-bold text-danger fs-5">¥{{ object.actual_amount }}</td></tr>
+                    <tr><th class="text-muted">成本金额</th><td>¥{{ object.cost_amount }}</td></tr>
+                    <tr><th class="text-muted">毛利</th><td class="fw-bold text-success">¥{{ object.profit|floatformat:2 }}</td></tr>
+                    <tr><th class="text-muted">支付方式</th><td>{{ object.get_pay_method_display }}</td></tr>
+                    <tr><th class="text-muted">本次积分</th><td>{{ object.points_earned }}</td></tr>
+                    <tr><th class="text-muted">备注</th><td>{{ object.remark|default:'-' }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}会员等级 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-award text-primary"></i> 会员等级设置</h5>
+        <div class="text-muted small">不同等级享有不同折扣与积分倍率</div>
+    </div>
+    <a href="{% url 'member:level_create' %}" class="btn btn-primary btn-sm mt-2 mt-md-0">
+        <i class="bi bi-plus-lg"></i> 新增等级</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>等级名称</th><th>折扣率</th><th>积分倍率</th><th>升级所需积分</th>
+                <th>会员数</th><th>备注</th><th class="text-end">操作</th></tr></thead>
+            <tbody>
+            {% for obj in levels %}
+                <tr>
+                    <td>{{ obj.pk }}</td>
+                    <td class="fw-bold">{{ obj.name }}</td>
+                    <td>{% if obj.discount < 1 %}<span class="badge bg-success">{{ obj.discount|floatformat:2 }} 折</span>
+                        {% else %}<span class="text-muted">无折扣</span>{% endif %}</td>
+                    <td>{{ obj.point_rate }} 倍</td>
+                    <td>{{ obj.min_points }}</td>
+                    <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ obj.members.count }}</span></td>
+                    <td class="text-muted">{{ obj.remark|default:'-' }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'member:level_update' obj.pk %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                        <a href="{% url 'member:level_delete' obj.pk %}" class="btn btn-sm btn-outline-danger"
+                           data-confirm="确定删除等级【{{ obj.name }}】吗？">删除</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">暂无等级，请先新增</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

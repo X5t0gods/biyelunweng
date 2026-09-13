@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}商品管理 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-box-seam text-primary"></i> 商品管理</h5>
+        <div class="text-muted small">维护商品档案、价格与库存上下限</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'goods:category_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-tags"></i> 分类管理</a>
+        <a href="{% url 'goods:product_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新增商品</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form class="row g-2" method="get">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="商品名称 / 条码 / 规格" value="{{ keyword }}">
+            </div>
+            <div class="col-md-2">
+                <select name="category" class="form-select">
+                    <option value="">全部分类</option>
+                    {% for c in categories %}
+                        <option value="{{ c.pk }}" {% if category_id|stringformat:"s" == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">全部状态</option>
+                    <option value="on" {% if status == 'on' %}selected{% endif %}>在售</option>
+                    <option value="off" {% if status == 'off' %}selected{% endif %}>已下架</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" name="low" value="1" id="lowCheck"
+                           {% if only_low %}checked{% endif %}>
+                    <label class="form-check-label small" for="lowCheck">仅看库存预警</label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit"><i class="bi bi-search"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+            <tr><th>#</th><th>条码</th><th>商品名称</th><th>分类</th><th>规格</th><th>进价</th><th>售价</th>
+                <th>毛利率</th><th>库存</th><th>状态</th><th class="text-end">操作</th></tr>
+            </thead>
+            <tbody>
+            {% for obj in page_obj %}
+                <tr class="{% if obj.is_low_stock %}table-warning{% endif %}">
+                    <td>{{ obj.pk }}</td>
+                    <td class="text-muted small">{{ obj.barcode }}</td>
+                    <td><a href="{% url 'goods:product_detail' obj.pk %}" class="fw-bold text-decoration-none">{{ obj.name }}</a></td>
+                    <td>{{ obj.category.name }}</td>
+                    <td class="text-muted">{{ obj.spec|default:'-' }}</td>
+                    <td>¥{{ obj.purchase_price }}</td>
+                    <td class="fw-bold text-primary">¥{{ obj.sale_price }}</td>
+                    <td>{{ obj.profit_rate }}%</td>
+                    <td>
+                        {{ obj.stock }}{{ obj.unit }}
+                        {% if obj.is_low_stock %}<i class="bi bi-exclamation-triangle-fill text-danger" title="低于安全库存"></i>{% endif %}
+                    </td>
+                    <td>{% if obj.status == 'on' %}<span class="badge bg-success">在售</span>
+                        {% else %}<span class="badge bg-secondary">已下架</span>{% endif %}</td>
+                    <td class="text-end">
+                        <a href="{% url 'goods:product_update' obj.pk %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                        <a href="{% url 'goods:product_toggle' obj.pk %}" class="btn btn-sm btn-outline-secondary"
+                           data-confirm="确定{{ obj.status|yesno:'下架,上架' }}该商品吗？">{{ obj.status|yesno:'下架,上架' }}</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="11" class="text-center text-muted py-4">暂无商品数据</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

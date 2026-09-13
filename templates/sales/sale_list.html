@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}销售订单 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-receipt text-primary"></i> 销售订单</h5>
+        <div class="text-muted small">
+            筛选结果合计：销售额 <b class="text-primary">¥{{ summary.amount|floatformat:2|default:0 }}</b> ·
+            毛利 <b class="text-success">¥{{ summary.profit|floatformat:2|default:0 }}</b>
+        </div>
+    </div>
+    <a href="{% url 'sales:pos' %}" class="btn btn-primary btn-sm mt-2 mt-md-0">
+        <i class="bi bi-cash-register"></i> 前往收银</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form class="row g-2" method="get">
+            <div class="col-md-3">
+                <input type="text" name="q" class="form-control" placeholder="单号 / 会员姓名 / 卡号" value="{{ keyword }}">
+            </div>
+            <div class="col-md-2">
+                <select name="pay" class="form-select">
+                    <option value="">全部支付方式</option>
+                    {% for value, label in pay_choices %}
+                        <option value="{{ value }}" {% if pay == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="start" class="form-control" value="{{ start }}" placeholder="开始日期">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="end" class="form-control" value="{{ end }}" placeholder="结束日期">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit"><i class="bi bi-search"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>销售单号</th><th>会员</th><th>件数</th><th>应收</th><th>优惠</th><th>实收</th>
+                <th>毛利</th><th>支付方式</th><th>收银员</th><th>状态</th><th>时间</th></tr></thead>
+            <tbody>
+            {% for obj in page_obj %}
+                <tr>
+                    <td><a href="{% url 'sales:sale_detail' obj.pk %}" class="fw-bold text-decoration-none">{{ obj.order_no }}</a></td>
+                    <td>{{ obj.member.name|default:'<span class="text-muted">散客</span>'|safe }}</td>
+                    <td>{{ obj.total_quantity }}</td>
+                    <td>¥{{ obj.total_amount }}</td>
+                    <td class="text-success">-¥{{ obj.discount_amount }}</td>
+                    <td class="fw-bold text-primary">¥{{ obj.actual_amount }}</td>
+                    <td class="text-success">¥{{ obj.profit|floatformat:2 }}</td>
+                    <td><span class="badge bg-light text-dark">{{ obj.get_pay_method_display }}</span></td>
+                    <td>{{ obj.cashier.real_name|default:obj.cashier.username }}</td>
+                    <td>
+                        {% if obj.status == 'done' %}<span class="badge bg-success">已完成</span>
+                        {% elif obj.status == 'returned' %}<span class="badge bg-warning text-dark">已退货</span>
+                        {% else %}<span class="badge bg-secondary">已作废</span>{% endif %}
+                    </td>
+                    <td class="small text-muted">{{ obj.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="11" class="text-center text-muted py-4">暂无销售记录</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

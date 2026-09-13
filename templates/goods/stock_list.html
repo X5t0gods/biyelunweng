@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}库存查询 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-boxes text-primary"></i> 库存查询与盘点</h5>
+        <div class="text-muted small">当前库存总金额（按进价）：<span class="text-primary fw-bold">¥{{ total_value|floatformat:2 }}</span></div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'goods:stock_alert' %}" class="btn btn-warning btn-sm"><i class="bi bi-exclamation-triangle"></i> 库存预警</a>
+        <a href="{% url 'goods:stock_log_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-list-ul"></i> 库存流水</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form class="row g-2" method="get">
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control" placeholder="商品名称 / 条码" value="{{ keyword }}">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit"><i class="bi bi-search"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>商品</th><th>分类</th><th>库存</th><th>安全库存</th><th>库存金额</th><th>状态</th>
+                <th class="text-end">操作</th></tr></thead>
+            <tbody>
+            {% for obj in page_obj %}
+                <tr class="{% if obj.is_low_stock %}table-warning{% endif %}">
+                    <td>{{ obj.pk }}</td>
+                    <td class="fw-bold">{{ obj.name }} <small class="text-muted">{{ obj.spec }}</small></td>
+                    <td>{{ obj.category.name }}</td>
+                    <td class="fw-bold">{{ obj.stock }}{{ obj.unit }}</td>
+                    <td>{{ obj.safety_stock }}</td>
+                    <td>¥{{ obj.stock_value|floatformat:2 }}</td>
+                    <td>
+                        {% if obj.stock == 0 %}<span class="badge bg-danger">缺货</span>
+                        {% elif obj.is_low_stock %}<span class="badge bg-warning text-dark">库存偏低</span>
+                        {% else %}<span class="badge bg-success">充足</span>{% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'goods:stock_adjust' obj.pk %}" class="btn btn-sm btn-outline-primary">盘点调整</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">暂无商品数据</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

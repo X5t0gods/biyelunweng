@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}系统登录 - {{ SHOP_NAME }}{% endblock %}
+
+{% block auth_content %}
+<div class="login-wrapper">
+    <div class="login-card card">
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <i class="bi bi-shop-window fs-1 text-primary"></i>
+                <h5 class="fw-bold mt-2 mb-0">{{ SHOP_NAME }}</h5>
+                <div class="text-muted small">社区超市销售管理系统 {{ SYSTEM_VERSION }}</div>
+            </div>
+
+            {% if form.errors %}
+                <div class="alert alert-danger py-2 small">账号或密码不正确，请重新输入。</div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">登录账号</label>
+                    {{ form.username }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">登录密码</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="bi bi-box-arrow-in-right"></i> 登 录
+                </button>
+            </form>
+
+            <hr class="my-4">
+            <div class="small text-muted">
+                <div class="fw-bold mb-1">演示账号（密码统一 123456）</div>
+                <div>系统管理员：admin &nbsp;|&nbsp; 店长：manager</div>
+                <div>收银员：cashier &nbsp;|&nbsp; 库管：stocker</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

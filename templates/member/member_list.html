@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}会员管理 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="mb-1 fw-bold"><i class="bi bi-people text-primary"></i> 会员管理</h5>
+        <div class="text-muted small">会员档案、积分与储值余额</div>
+    </div>
+    <div class="d-flex gap-2 mt-2 mt-md-0">
+        <a href="{% url 'member:level_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-award"></i> 等级设置</a>
+        <a href="{% url 'member:member_create' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> 新增会员</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body py-3">
+        <form class="row g-2" method="get">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="卡号 / 姓名 / 手机号" value="{{ keyword }}">
+            </div>
+            <div class="col-md-3">
+                <select name="level" class="form-select">
+                    <option value="">全部等级</option>
+                    {% for l in levels %}
+                        <option value="{{ l.pk }}" {% if level_id|stringformat:"s" == l.pk|stringformat:"s" %}selected{% endif %}>{{ l.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary w-100" type="submit"><i class="bi bi-search"></i> 查询</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>会员卡号</th><th>姓名</th><th>手机号</th><th>等级</th><th>积分</th>
+                <th>储值余额</th><th>累计消费</th><th>入会时间</th><th class="text-end">操作</th></tr></thead>
+            <tbody>
+            {% for obj in page_obj %}
+                <tr>
+                    <td>{{ obj.pk }}</td>
+                    <td class="small">{{ obj.card_no }}</td>
+                    <td><a href="{% url 'member:member_detail' obj.pk %}" class="fw-bold text-decoration-none">{{ obj.name }}</a></td>
+                    <td>{{ obj.phone }}</td>
+                    <td><span class="badge bg-info text-dark">{{ obj.level_name }}</span></td>
+                    <td>{{ obj.points }}</td>
+                    <td class="fw-bold text-success">¥{{ obj.balance }}</td>
+                    <td>¥{{ obj.total_spend }}</td>
+                    <td class="small text-muted">{{ obj.join_date|date:"Y-m-d" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'member:member_recharge' obj.pk %}" class="btn btn-sm btn-outline-success">充值</a>
+                        <a href="{% url 'member:member_update' obj.pk %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="10" class="text-center text-muted py-4">暂无会员数据</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body pt-0">{% include 'includes/pagination.html' %}</div>
+</div>
+{% endblock %}

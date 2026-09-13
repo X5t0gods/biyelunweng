@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}会员充值 - {{ SHOP_NAME }}{% endblock %}
+
+{% block content %}
+<h5 class="mb-3 fw-bold"><i class="bi bi-wallet2 text-primary"></i> 会员充值：{{ object.name }}
+    <small class="text-muted fs-6">当前余额 ¥{{ object.balance }}</small></h5>
+
+<div class="card" style="max-width:520px">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% include 'includes/form_fields.html' %}
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success"><i class="bi bi-cash-coin"></i> 确认充值</button>
+                <a href="{% url 'member:member_detail' object.pk %}" class="btn btn-outline-secondary">返回</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
