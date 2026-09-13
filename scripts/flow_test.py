@@ -42,7 +42,7 @@ def check(name, cond, detail=''):
 
 def admin():
     c = Client()
-    assert c.login(username='admin', password='******')
+    assert c.login(username='admin', password='123456')
     return c
 
 
@@ -51,7 +51,7 @@ def admin():
 def test_pos():
     print('\n【1】前台收银')
     c = Client()
-    c.login(username='cashier', password='******')
+    c.login(username='cashier', password='123456')
 
     p = Product.objects.filter(status=Product.STATUS_ON, stock__gt=20).first()
     before = p.stock
@@ -87,7 +87,7 @@ def test_pos():
     m2.save()
     p2 = Product.objects.filter(status=Product.STATUS_ON, stock__gt=20).exclude(pk=p.pk).first()
     c2 = Client()
-    c2.login(username='cashier', password='******')
+    c2.login(username='cashier', password='123456')
     c2.post('/sales/pos/', {'action': 'add', 'code': p2.barcode})
     c2.post('/sales/pos/', {'action': 'member', 'member_key': m2.card_no})
     c2.post('/sales/pos/', {'action': 'checkout', 'pay_method': 'balance'})
@@ -99,7 +99,7 @@ def test_pos():
     m3.balance = Decimal('0')
     m3.save()
     c3 = Client()
-    c3.login(username='cashier', password='******')
+    c3.login(username='cashier', password='123456')
     c3.post('/sales/pos/', {'action': 'add', 'code': p2.barcode})
     c3.post('/sales/pos/', {'action': 'member', 'member_key': m3.card_no})
     r = c3.post('/sales/pos/', {'action': 'checkout', 'pay_method': 'balance'})
@@ -111,7 +111,7 @@ def test_pos():
 def test_purchase():
     print('\n【2】采购入库')
     c = Client()
-    c.login(username='stocker', password='******')
+    c.login(username='stocker', password='123456')
 
     # 只挑选在售商品（采购明细表单限定了 status=on），保证测试可重复执行
     p = Product.objects.filter(status=Product.STATUS_ON).first()
@@ -146,7 +146,7 @@ def test_purchase():
 def test_return():
     print('\n【3】销售退货')
     c = Client()
-    c.login(username='manager', password='******')
+    c.login(username='manager', password='123456')
 
     sale = Sale.objects.filter(status=Sale.STATUS_DONE, member__isnull=False).first()
     item = sale.items.first()
@@ -190,7 +190,7 @@ def test_return():
 def test_void():
     print('\n【4】销售单作废')
     c = Client()
-    c.login(username='manager', password='******')
+    c.login(username='manager', password='123456')
 
     sale = Sale.objects.filter(status=Sale.STATUS_DONE, member__isnull=False).first()
     p = sale.items.first().product
@@ -293,7 +293,7 @@ def test_member():
 def test_permission():
     print('\n【7】权限控制')
     c = Client()
-    c.login(username='cashier', password='******')
+    c.login(username='cashier', password='123456')
 
     r = c.get('/accounts/users/')
     check('收银员不能访问员工管理', r.status_code == 302, f'status={r.status_code}')
@@ -302,7 +302,7 @@ def test_permission():
     check('收银员不能新建采购单', r.status_code == 302, f'status={r.status_code}')
 
     m = Client()
-    m.login(username='manager', password='******')
+    m.login(username='manager', password='123456')
     r = m.get('/accounts/users/')
     check('店长可访问员工管理', r.status_code == 200, f'status={r.status_code}')
 
@@ -337,7 +337,7 @@ def test_misc_writes():
     # 员工新增 / 编辑 / 重置密码 / 停用
     r = c.post('/accounts/users/create/', {
         'username': 'testuser', 'real_name': '测试员工', 'role': User.ROLE_CASHIER,
-        'employee_no': 'T999', 'phone': '13700000000', 'password': '******',
+        'employee_no': 'T999', 'phone': '13700000000', 'password': 'test123456',
         'is_active': 'on', 'address': '', 'entry_date': '',
     })
     u = User.objects.filter(username='testuser').first()
@@ -352,7 +352,7 @@ def test_misc_writes():
         u.refresh_from_db()
         check('员工信息可修改', u.real_name == '测试员工改' and u.employee_no == 'T998')
         r = c.post(f'/accounts/users/{u.pk}/reset-password/',
-                   {'new_password1': '******', 'new_password2': '******'})
+                   {'new_password1': 'Newpass123!', 'new_password2': 'Newpass123!'})
         check('重置密码成功', r.status_code == 302, f'status={r.status_code}')
         c.post(f'/accounts/users/{u.pk}/toggle/', {})
         u.refresh_from_db()
@@ -372,7 +372,7 @@ def test_misc_writes():
 
     # 采购单取消 / 删除
     c2 = Client()
-    c2.login(username='stocker', password='******')
+    c2.login(username='stocker', password='123456')
     c2.post('/purchase/create/', {'supplier': Supplier.objects.first().pk, 'remark': '待取消'})
     o1 = PurchaseOrder.objects.order_by('-pk').first()
     c2.post(f'/purchase/{o1.pk}/cancel/', {})

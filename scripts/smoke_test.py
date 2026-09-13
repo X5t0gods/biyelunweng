@@ -51,7 +51,7 @@ URLS = [
 
 def main():
     client = Client()
-    if not client.login(username='admin', password='******'):
+    if not client.login(username='admin', password='123456'):
         print('登录失败，请先执行 python manage.py init_data')
         return 1
 

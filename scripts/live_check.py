@@ -20,7 +20,7 @@ import urllib.parse
 import urllib.request
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else 'http://127.0.0.1:8000').rstrip('/')
-ACCOUNT = ('admin', '******')
+ACCOUNT = ('admin', '123456')
 
 # 期望「该页面高亮哪个菜单项」
 EXPECTED = [

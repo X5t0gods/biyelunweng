@@ -142,7 +142,7 @@ class Command(BaseCommand):
                 self.create_sales(products, members, cashiers)
 
         self.stdout.write(self.style.SUCCESS('演示数据初始化完成！'))
-        self.stdout.write('登录账号：admin / manager / cashier / stocker，密码统一为 ******')
+        self.stdout.write('登录账号：admin / manager / cashier / stocker，密码统一为 123456')
 
     # ---------------- 工具 ----------------
 
@@ -174,9 +174,9 @@ class Command(BaseCommand):
         mapping = {}
         for username, name, role, no, phone, superuser in data:
             if superuser:
-                user = User.objects.create_superuser(username=username, password='******')
+                user = User.objects.create_superuser(username=username, password='123456')
             else:
-                user = User.objects.create_user(username=username, password='******')
+                user = User.objects.create_user(username=username, password='123456')
             user.real_name = name
             user.role = role
             user.employee_no = no

@@ -88,7 +88,7 @@ def main():
     global passed, failed
 
     c = Client()
-    assert c.login(username='admin', password='******'), '登录失败，请先执行 init_data'
+    assert c.login(username='admin', password='123456'), '登录失败，请先执行 init_data'
 
     print('【固定页面高亮】')
     for name, _args, expected in CASES:
@@ -110,7 +110,7 @@ def main():
     print('\n【回归：其他角色登录也能正常渲染菜单】')
     for account, role in [('cashier', '收银员'), ('stocker', '库管'), ('manager', '店长')]:
         cc = Client()
-        if not cc.login(username=account, password='******'):
+        if not cc.login(username=account, password='123456'):
             failed += 1
             print(f'  [失败] {account} 登录失败')
             continue

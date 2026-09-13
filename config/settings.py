@@ -16,7 +16,7 @@ APPS_DIR = BASE_DIR / 'apps'
 sys.path.insert(0, str(APPS_DIR))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '******'
+SECRET_KEY = 'django-insecure-community-supermarket-2026-#k9v!p2x_dev_key'
 
 DEBUG = True
 
@@ -93,7 +93,7 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': os.environ.get('DB_NAME', 'supermarket'),
             'USER': os.environ.get('DB_USER', 'root'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', '******'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', '123456'),
             'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
             'PORT': os.environ.get('DB_PORT', '3306'),
             'OPTIONS': {
